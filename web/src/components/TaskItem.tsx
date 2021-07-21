@@ -32,14 +32,23 @@ interface TaskDto{
     date?: string;
     time?: string;
     status?: string;
+    setUpdateId: (id: number | null) => void;
 }
 
 // {time, description}: 
 function TaskItem(props: any): JSX.Element { // ?????????????????????????
-    // console.log(props.task.description);
 
     const classes = useStyle();
-    // const fetcher = (url: string) => fetch(url).then(r => r.json())
+    const getTask = (id: number) => {
+        if (id >= 0){
+            fetch(`http://localhost:3001/api/scheduler/${id}`, {
+              method: 'GET'
+            }).then((res) => {
+            //   mutate("http://localhost:3001/api/scheduler/");
+            console.log(res);
+            
+        });}
+    }
   
     const deleteTask = (id: number): void => {
         if (id >= 0){
@@ -50,20 +59,18 @@ function TaskItem(props: any): JSX.Element { // ?????????????????????????
         });}
     }
 
-    const updateTask = (id: number): void => {
+    // const updateTask = (id: number, time: string, description: string): void => {
     //     if (id >= 0){
     //         fetch(`http://localhost:3001/api/scheduler/${id}`, {
     //           method: 'PUT',
     //           headers: {'Content-Type': 'application/json; charset=utf-8'},
-    //           body: JSON.stringify({props.task.status== ...props.task}), // ????
+    //           body: JSON.stringify({description: description, time: time}), 
     //         }).then(() => {
     //           mutate("http://localhost:3001/api/scheduler/");
     //     });} 
     // }
-    }
 
     const completeTask = (id: number): void => {
-        // console.log(...props.task}, "ddddd");
         let status: string = "completed";
 
         if (props.task.status === "completed"){
@@ -80,15 +87,8 @@ function TaskItem(props: any): JSX.Element { // ?????????????????????????
         });} 
     }
 
-    return(
-        <Box className={classes.taskItem}>
-            <Box>
-                <Typography>{ props.task.time }</Typography>
-                { (props.task.status === "completed")
-                    ? <Typography style={{ textDecoration:"line-through" }}>{props.task.description}</Typography>
-                    : <Typography>{ props.task.description }</Typography>
-                }
-            </Box>
+    const rudButtons = (): JSX.Element => {
+        return (
             <Box>
                 <DoneIcon
                     style={{
@@ -104,7 +104,7 @@ function TaskItem(props: any): JSX.Element { // ?????????????????????????
                         marginRight:"20px",
                         color: orange[500], 
                         fontSize: 30}}
-                    onClick={() => {}}
+                    onClick={() => props.setUpdateId(props.task.id)}
                 />
                 <DeleteIcon 
                     style={{
@@ -114,8 +114,19 @@ function TaskItem(props: any): JSX.Element { // ?????????????????????????
                     }}
                     onClick={() => {deleteTask(props.task.id)}}
                 />
-                {/* <Avatar alt="Avatar" src={avatarIcon} className={classes.avatar} /> */}
             </Box>
+        )
+    }
+    return(
+        <Box className={classes.taskItem}>
+            <Box>
+                <Typography>{ props.task.time }</Typography>
+                { (props.task.status === "completed")
+                    ? <Typography style={{ textDecoration:"line-through" }}>{props.task.description}</Typography>
+                    : <Typography>{ props.task.description }</Typography>
+                }
+            </Box>
+            {rudButtons()}
         </Box>
     );
 }

@@ -18,6 +18,12 @@ export class SchedulerController {
         return this.schedulerService.findAllTasks();
     }
 
+    @Get(':id')
+    findOne(@Param('id') id: string): Promise<TaskDto>{
+        return this.schedulerService.findTaskById(id);
+    }
+
+
     @Get("/date/:dt")
     findAllByDate(@Param("dt") date: string): Promise<TaskDto[]>{
         return this.schedulerService.findAllTasksByDate(date);

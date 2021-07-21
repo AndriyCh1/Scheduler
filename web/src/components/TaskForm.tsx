@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import { useState } from "react";
 import moment from "moment";
 import TaskList from "./TaskList";
+import axios from "axios";
 
 
 const useStyle = makeStyles(theme => ({
@@ -41,26 +42,31 @@ interface TaskDto{
     id?: number;
     userId?: number;
     description: string;
-    date: string;
+    date?: string;
     time: string;
-    status: string;
+    status?: string;
 }
 
 interface ITaskForm{
     selectedDate: string;
     mutate: any;
+    editedTask?: TaskDto;
+    updateId: number | null;
+    setUpdateId: (id: number | null) => void;
 }
 
-function TaskForm({selectedDate, mutate}: ITaskForm): JSX.Element{
+function TaskForm({selectedDate, mutate, updateId, setUpdateId}: ITaskForm): JSX.Element{
     const classes = useStyle();
 
     const fetcher = (url: string) => fetch(url).then(r => r.json());
-    const {data: tasks, error} = useSWR<TaskDto[]>(`http://localhost:3001/api/scheduler/date/${selectedDate}`, fetcher);
+    const {data: tasks, error, mutate: mutateDate} = useSWR<TaskDto[]>(`http://localhost:3001/api/scheduler/date/${selectedDate}`, fetcher);
+
 
     const [userInput, setUserInput] = useState<string>("");
     const [selectedTimeFrom, setTimeFrom] = useState<string>(moment().format("HH:mm")); 
     const [selectedTimeTo, setTimeTo] = useState<string>(moment().format("HH:mm")); 
     
+
     const checkAvailableTime = (times: string): boolean => {
 
         let isCorrect: boolean = true;
@@ -85,8 +91,17 @@ function TaskForm({selectedDate, mutate}: ITaskForm): JSX.Element{
         return false;
     }
     
+
+
+    const getTaskById = async (id: number) => { // !!!
+        if (id > 0){
+            const {data} =  await axios.get(`http://localhost:3001/api/scheduler/${id}`);
+            setUserInput(data.description);
+        } 
+    }
+
+
     const createTask = (task: TaskDto): void =>  {
-        console.log(task.time,"task");
         if(checkAvailableTime(task.time)){
             fetch("http://localhost:3001/api/scheduler/", {
                 method: 'POST',
@@ -94,12 +109,25 @@ function TaskForm({selectedDate, mutate}: ITaskForm): JSX.Element{
                 body: JSON.stringify(task)
             }).then(() => {
                 mutate();
+                mutateDate();
             });
         }else{
-            console.log("date error");
+            alert("Time is incorrect");
             
         }
     }
+
+    const updateTask = (id: number): void => {
+        if (id >= 0){
+            fetch(`http://localhost:3001/api/scheduler/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json; charset=utf-8'},
+                body: JSON.stringify({}), 
+            }).then(() => {
+                mutate("http://localhost:3001/api/scheduler/");
+        });} 
+    }
+
     return(
     <>
     <form className={classes.taskForm}>  
@@ -121,24 +149,26 @@ function TaskForm({selectedDate, mutate}: ITaskForm): JSX.Element{
             className={classes.textField} 
             variant="filled"
             size="small"
+            value={updateId? userInput :"des"}
             onChange={(e) => setUserInput(e.target.value)}
         />
         <Button 
             className={classes.addTask}
             onClick={() => {
-                createTask({
-                    userId: 2, 
-                    description: userInput, 
-                    date: selectedDate,
-                    time: selectedTimeFrom +"-"+ selectedTimeTo, 
-                    status: "inProcess"
-                } as TaskDto);
+                // createTask({
+                //     userId: 2, 
+                //     description: userInput, 
+                //     date: selectedDate,
+                //     time: selectedTimeFrom +"-"+ selectedTimeTo, 
+                //     status: "inProcess"
+                // } as TaskDto);
+                
+                setUpdateId(null);
                 // setUserInput("");
             }}>
             Add
         </Button>
     </form>
-    {/* <Typography align="center"> temp: { (selectedDate.split("T"))[0] + " " + (selectedDate.split("T"))[1]}</Typography> */}
     </>
   );
 }

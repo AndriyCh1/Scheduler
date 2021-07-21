@@ -15,11 +15,13 @@ interface TaskDto{
 
 interface ITaskList{
     date: string;
-    mutate: any ;
-    // formData: TaskDto;
-    // setFormData: React.Dispatch<React.SetStateAction<TaskDto>>;
+    mutate: any ; // ????????????????????????
+    setUpdateId: (id: number | null) => void;
+    // setEditedTask: React.Dispatch<React.SetStateAction<TaskDto>>;
+
 }
-function TaskList({date, mutate}:ITaskList):JSX.Element {
+function TaskList({date, mutate, setUpdateId}:ITaskList): JSX.Element {
+
     const fetcher = (url: string) => fetch(url).then(r => r.json());
     const {data: tasks, error} = useSWR<TaskDto[]>("http://localhost:3001/api/scheduler/", fetcher);
 
@@ -35,6 +37,8 @@ function TaskList({date, mutate}:ITaskList):JSX.Element {
                 key={index}
                 task={task}
                 mutate={mutate}
+                setUpdateId={setUpdateId}
+
             />
             )}
         </Box>

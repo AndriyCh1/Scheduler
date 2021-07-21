@@ -16,13 +16,12 @@ const useStyle = makeStyles(()=>({
     },
 }));
 
-
-interface TaskDto{
+interface TaskDto{ //??????????????
     id?: number;
     userId?: number;
     description: string;
     date?: string;
-    time?: string;
+    time: string;
     status?: string;
 }
 
@@ -34,30 +33,30 @@ function Scheduler(): JSX.Element {
     const fetcher = (url: string) => fetch(url).then(r => r.json());
     const {data: tasks, error, mutate} = useSWR<TaskDto[]>("http://localhost:3001/api/scheduler/", fetcher);
 
-    // const [formData, setFormData] = useState<TaskDto>({
-    //     id: -1,
-    //     userId: 1,
-    //     description: "",
-    //     date: "",
-    //     time: "",
-    //     status: ""
-    // });
+    // const [editedTask, setEditedTask] = useState<string>("");
 
-
+    const [updateId, setUpdateId] = useState<number | null>(null);
+    console.log(updateId);
+    
     return (
         <Paper className={classes.scheduler}>
             <Header 
                 setDate={setDate}
-                selectedDate={selectedDate}
+                selectedDate={selectedDate} // ? selected ?
             />
             <TaskList 
                 date={selectedDate} 
                 mutate={mutate}
+                setUpdateId={setUpdateId}
+
             />
             <TaskForm 
                 selectedDate={selectedDate}
                 mutate={mutate}
-                />
+                updateId={updateId}
+                setUpdateId={setUpdateId}
+
+            />
         </Paper>
     );
   }

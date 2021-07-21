@@ -20,6 +20,10 @@ export class SchedulerService {
         return await this.taskRepository.find({order:{time:"ASC"}});
     }
 
+    async findTaskById(id: string): Promise<TaskDto>{
+        return await this.taskRepository.findOne(id);
+    }
+
     async findAllTasksByDate(date: string): Promise<TaskDto[]>{
         return await this.taskRepository.find({
                 order:{

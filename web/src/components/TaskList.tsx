@@ -1,11 +1,10 @@
 import { Box, } from "@material-ui/core";
 import useSWR from "swr";
-import { MutatorCallback } from "swr/dist/types";
 import TaskItem from "./TaskItem";
 
 
 interface TaskDto{
-    id?: number;
+    id: number;
     userId?: number;
     description?: string;
     date?: string;
@@ -14,32 +13,33 @@ interface TaskDto{
 }
 
 interface ITaskList{
-    date: string;
+    selectedDate: string;
     mutate: any ; // ????????????????????????
     setUpdateId: (id: number | null) => void;
-    // setEditedTask: React.Dispatch<React.SetStateAction<TaskDto>>;
-
 }
-function TaskList({date, mutate, setUpdateId}:ITaskList): JSX.Element {
+
+function TaskList({selectedDate, mutate, setUpdateId}: ITaskList): JSX.Element {
 
     const fetcher = (url: string) => fetch(url).then(r => r.json());
     const {data: tasks, error} = useSWR<TaskDto[]>("http://localhost:3001/api/scheduler/", fetcher);
-
+    console.log(typeof(tasks));
+    
     const getDataByDate = (date: string): TaskDto[] | undefined => {
         let arr: TaskDto[] | undefined = tasks?.filter( function(task) { return task.date === date });
         return arr;
     }
+    console.log(typeof(tasks));
+    console.log("___________");
 
     return(
         <Box>
-            {getDataByDate(date)?.map((task, index) => 
-            <TaskItem
-                key={index}
-                task={task}
-                mutate={mutate}
-                setUpdateId={setUpdateId}
-
-            />
+            {getDataByDate(selectedDate)?.map((task, index) => 
+                <TaskItem
+                    key={index}
+                    task={task}
+                    mutate={mutate}
+                    setUpdateId={setUpdateId}
+                />
             )}
         </Box>
     );

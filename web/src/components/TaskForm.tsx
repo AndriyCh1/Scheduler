@@ -1,11 +1,12 @@
-import { Button, makeStyles, TextField } from "@material-ui/core";
-import useSWR from 'swr';
+import { Button, makeStyles, TextField, Typography } from "@material-ui/core";
+import useSWR, { mutate} from 'swr';
 
 import { useState } from "react";
 import moment from "moment";
 import TaskList from "./TaskList";
 import axios from "axios";
-
+import { useEffect } from "react";
+import { Box } from "@material-ui/core";
 
 const useStyle = makeStyles(theme => ({
     taskForm:{
@@ -13,29 +14,40 @@ const useStyle = makeStyles(theme => ({
         alignItems: "center",
         margin: "25px 15px"
     },
+
     addTask:{
-        width: "15%",
-        height:"100%",
+        alignSelf: 'center',
         backgroundColor:"#6ECAFF",
         border: "none",
-        cursor: "pointer"
+        cursor: "pointer",
+    },    
+    saveEdited:{
+        backgroundColor:"#6ECAFF",
+        marginBottom: theme.spacing(1),
     },
+    cancelEdited:{
+        backgroundColor:"#6ECAFF",
+    },
+
     textField: {
-        paddingTop: theme.spacing(1),
-        paddingBottom: theme.spacing(5),
-        paddin: theme.spacing(1),
-        marginRight: theme.spacing(2),
         width:"80%",
         height:"10px",
+        paddin: theme.spacing(1),
+        paddingTop: theme.spacing(1),
+        paddingBottom: theme.spacing(5),
+        marginRight: theme.spacing(2),
+        marginLeft: theme.spacing(2),
     },
+
     timeField:{
+        width:"20%",
+        height:"10px",
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(5),
         paddin: theme.spacing(1),
-        marginRight: theme.spacing(2),
-        width:"20%",
-        height:"10px",
+        marginRight: theme.spacing(1),
     },
+
 }))
 
 interface TaskDto{
@@ -61,11 +73,13 @@ function TaskForm({selectedDate, mutate, updateId, setUpdateId}: ITaskForm): JSX
     const fetcher = (url: string) => fetch(url).then(r => r.json());
     const {data: tasks, error, mutate: mutateDate} = useSWR<TaskDto[]>(`http://localhost:3001/api/scheduler/date/${selectedDate}`, fetcher);
 
-
     const [userInput, setUserInput] = useState<string>("");
     const [selectedTimeFrom, setTimeFrom] = useState<string>(moment().format("HH:mm")); 
-    const [selectedTimeTo, setTimeTo] = useState<string>(moment().format("HH:mm")); 
+    const [selectedTimeTo, setTimeTo] = useState<string>(moment().add(1, 'hours').format("HH:mm")); 
     
+    useEffect(() => {
+        updateId ? getTaskById(updateId) : getTaskById(-1);
+    }, [updateId]);
 
     const checkAvailableTime = (times: string): boolean => {
 
@@ -90,16 +104,13 @@ function TaskForm({selectedDate, mutate, updateId, setUpdateId}: ITaskForm): JSX
         }
         return false;
     }
-    
 
-
-    const getTaskById = async (id: number) => { // !!!
+    const getTaskById = async (id: number) => {
         if (id > 0){
             const {data} =  await axios.get(`http://localhost:3001/api/scheduler/${id}`);
             setUserInput(data.description);
         } 
     }
-
 
     const createTask = (task: TaskDto): void =>  {
         if(checkAvailableTime(task.time)){
@@ -113,18 +124,17 @@ function TaskForm({selectedDate, mutate, updateId, setUpdateId}: ITaskForm): JSX
             });
         }else{
             alert("Time is incorrect");
-            
         }
     }
 
-    const updateTask = (id: number): void => {
+    const updateTask = (id: number, input: string): void => {
         if (id >= 0){
             fetch(`http://localhost:3001/api/scheduler/${id}`, {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/json; charset=utf-8'},
-                body: JSON.stringify({}), 
+                body: JSON.stringify({description: input}), 
             }).then(() => {
-                mutate("http://localhost:3001/api/scheduler/");
+                mutate();
         });} 
     }
 
@@ -149,25 +159,46 @@ function TaskForm({selectedDate, mutate, updateId, setUpdateId}: ITaskForm): JSX
             className={classes.textField} 
             variant="filled"
             size="small"
-            value={updateId? userInput :"des"}
+            value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
         />
+        {!updateId ? 
         <Button 
             className={classes.addTask}
             onClick={() => {
-                // createTask({
-                //     userId: 2, 
-                //     description: userInput, 
-                //     date: selectedDate,
-                //     time: selectedTimeFrom +"-"+ selectedTimeTo, 
-                //     status: "inProcess"
-                // } as TaskDto);
-                
-                setUpdateId(null);
-                // setUserInput("");
-            }}>
-            Add
+                createTask({
+                    userId: 2, 
+                    description: userInput, 
+                    date: selectedDate,
+                    time: selectedTimeFrom +"-"+ selectedTimeTo, 
+                    status: "inProcess"
+                } as TaskDto);
+                setUserInput("");
+            }}> 
+            Додати
         </Button>
+        : <Box>
+            <Button
+                className={classes.saveEdited}
+                onClick={() => {
+                    updateTask(updateId, userInput);
+                    setUpdateId(null);
+                    setUserInput("");
+                }}
+            >
+                Зберегти
+            </Button>
+            <Button
+                className={classes.cancelEdited}
+                onClick={() => {
+                    setUpdateId(null);
+                    setUserInput("");
+                }}
+            >
+                Скасувати
+            </Button>
+        </Box>
+        }
     </form>
     </>
   );

@@ -10,7 +10,7 @@ import useSWR from "swr";
 const useStyle = makeStyles(()=>({
     scheduler:{
         margin: "10px auto",
-        maxWidth: "600px",
+        maxWidth: "650px",
         border: "2px solid #D4F5FE",
         borderRadius: "10px",
     },
@@ -33,10 +33,7 @@ function Scheduler(): JSX.Element {
     const fetcher = (url: string) => fetch(url).then(r => r.json());
     const {data: tasks, error, mutate} = useSWR<TaskDto[]>("http://localhost:3001/api/scheduler/", fetcher);
 
-    // const [editedTask, setEditedTask] = useState<string>("");
-
     const [updateId, setUpdateId] = useState<number | null>(null);
-    console.log(updateId);
     
     return (
         <Paper className={classes.scheduler}>
@@ -45,17 +42,15 @@ function Scheduler(): JSX.Element {
                 selectedDate={selectedDate} // ? selected ?
             />
             <TaskList 
-                date={selectedDate} 
+                selectedDate={selectedDate} 
                 mutate={mutate}
                 setUpdateId={setUpdateId}
-
             />
             <TaskForm 
                 selectedDate={selectedDate}
                 mutate={mutate}
                 updateId={updateId}
                 setUpdateId={setUpdateId}
-
             />
         </Paper>
     );

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskDto } from 'src/dto/tasks.dto';
 import { TaskEntity } from 'src/entities/task.entity';
@@ -17,7 +17,7 @@ export class SchedulerService {
     }
     
     async findAllTasks(): Promise<TaskDto[]>{
-        return await this.taskRepository.find({order:{time:"ASC"}});
+        return await this.taskRepository.find({ order:{ time:"ASC"}  });
     }
 
     async findTaskById(id: string): Promise<TaskDto>{

@@ -1,7 +1,6 @@
 import { Box, makeStyles, TextField } from "@material-ui/core";
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import moment from "moment";
-import { useState } from "react";
 
 const useStyle = makeStyles((theme) =>({
     header:{
@@ -12,40 +11,41 @@ const useStyle = makeStyles((theme) =>({
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
+        color: "#fff",
+        height:"60px",
+
     },
     
     rotated:{
         transform: "rotate(180deg)",
     },
+
     textField: {
-        paddingTop: theme.spacing(1),
-        paddingBottom: theme.spacing(5),
-        paddin: theme.spacing(1),
-        marginRight: theme.spacing(2),
-        width:"80%",
-        height:"10px",
-        alignItems:"center"
+        alignItems: "center",
     },
+
+    dateColor:{
+        color: '#000',
+        fontSize: '17px',
+
+    }
 }));
 
 interface IsetDate{  
-    setDate: React.Dispatch<React.SetStateAction<string>>
+    setDate: (date: string) => void;
     selectedDate: string
 }
 
 function Header({setDate, selectedDate}: IsetDate): JSX.Element{
     const classes = useStyle();
 
-    const [isOpen, setIsOpen] = useState(false);
-
-
-    const IncrementDate = (selectedDate: string): void => {
+    const incrementDate = (selectedDate: string): void => {
         let date = moment(selectedDate);
         date = date.add(1, 'days');
         setDate(date.format("yyyy-MM-DD"));
     }
 
-    const DecrementDate = (selectedDate: string): void => {
+    const decrementDate = (selectedDate: string): void => {
         let date = moment(selectedDate);
         date = date.add(-1, 'days');
         setDate(date.format("yyyy-MM-DD"));
@@ -54,22 +54,24 @@ function Header({setDate, selectedDate}: IsetDate): JSX.Element{
     return(
         <Box className={classes.header}>
             <ArrowBackIcon
-                 onClick={() => DecrementDate(selectedDate)}
+                 onClick={() => decrementDate(selectedDate)}
             />    
-        <TextField
-            label="Дата"
-            type="date"
-            value={selectedDate}
-            className={classes.textField}
-            InputLabelProps={{
-                shrink: true,
-            }}
-            InputProps={{ disableUnderline: true }}
-            onChange={e => setDate(e.target.value)}
-        />
+            <TextField
+                type="date"
+                value={selectedDate}
+                className={classes.textField}
+                InputLabelProps={{
+                    shrink: true,
+                }}
+                InputProps={{ 
+                    disableUnderline: true,
+                    className: classes.dateColor,
+                }}
+                onChange={e => setDate(e.target.value)}
+            />
             <ArrowBackIcon 
                 className={classes.rotated}
-                onClick={() => IncrementDate(selectedDate)}
+                onClick={() => incrementDate(selectedDate)}
             />
         </Box>
         );  

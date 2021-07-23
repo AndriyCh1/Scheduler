@@ -17,7 +17,13 @@ export class SchedulerService {
     }
     
     async findAllTasks(): Promise<TaskDto[]>{
-        return await this.taskRepository.find({ order:{ time:"ASC"}  });
+        return await this.taskRepository.find({
+                order:{ 
+                    time:"ASC"
+                }  
+            }
+        );
+
     }
 
     async findTaskById(id: string): Promise<TaskDto>{
@@ -38,12 +44,6 @@ export class SchedulerService {
 
     async updateTask(id: number, task: TaskDto): Promise<void>{
         await this.taskRepository.update(id, task);
-        
-        // const taskRow = await this.taskRepository.findOne(id);
-        // if (taskRow){
-        //     taskRow.description = task.description;
-        //     await this.taskRepository.save(taskRow); 
-        // }
     }
 
     async deleteTask(id: number): Promise<void>{

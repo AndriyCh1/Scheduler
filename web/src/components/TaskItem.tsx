@@ -3,7 +3,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import DoneIcon from '@material-ui/icons/Done';
 import { green, orange, red } from '@material-ui/core/colors';
-import { mutate } from "swr";
+import { TaskDto } from "../dto/task.dto";
 
 const useStyle = makeStyles(theme =>({
     taskItem:{
@@ -19,16 +19,6 @@ const useStyle = makeStyles(theme =>({
     },
 }))
 
-
-interface TaskDto{
-    id: number;
-    userId?: number;
-    description?: string;
-    date?: string;
-    time?: string;
-    status?: string;
-}
-
 interface ITaskItem{
     task: TaskDto;
     mutate: any;
@@ -36,11 +26,10 @@ interface ITaskItem{
 }
 
 function TaskItem({task, mutate, setUpdateId}: ITaskItem): JSX.Element { // ?????????
-
     const classes = useStyle();
 
     const deleteTask = (id: number): void => {
-        if (id >= 0){
+        if (id > 0){
             fetch(`http://localhost:3001/api/scheduler/${id}`, {
               method: 'DELETE'
             }).then(() => {
@@ -55,7 +44,7 @@ function TaskItem({task, mutate, setUpdateId}: ITaskItem): JSX.Element { // ????
 
         if (task.status === "completed") status = "inProgress";
 
-        if (id >= 0){
+        if (id > 0){
             fetch(`http://localhost:3001/api/scheduler/${id}`, {
               method: 'PUT',
               headers: {'Content-Type': 'application/json; charset=utf-8'},

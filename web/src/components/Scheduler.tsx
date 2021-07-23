@@ -5,7 +5,7 @@ import { makeStyles, Paper } from "@material-ui/core";
 import { useState } from "react";
 import moment from "moment";
 import useSWR from "swr";
-
+import { TaskDto } from "../dto/task.dto";
 
 const useStyle = makeStyles(()=>({
     scheduler:{
@@ -16,14 +16,6 @@ const useStyle = makeStyles(()=>({
     },
 }));
 
-interface TaskDto{ //??????????????
-    id?: number;
-    userId?: number;
-    description: string;
-    date?: string;
-    time: string;
-    status?: string;
-}
 
 function Scheduler(): JSX.Element {
     const classes = useStyle();

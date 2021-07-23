@@ -3,10 +3,10 @@ import useSWR, { mutate} from 'swr';
 
 import { useState } from "react";
 import moment from "moment";
-import TaskList from "./TaskList";
 import axios from "axios";
 import { useEffect } from "react";
 import { Box } from "@material-ui/core";
+import { TaskDto } from "../dto/task.dto";
 
 const useStyle = makeStyles(theme => ({
     taskForm:{
@@ -20,11 +20,13 @@ const useStyle = makeStyles(theme => ({
         backgroundColor:"#6ECAFF",
         border: "none",
         cursor: "pointer",
-    },    
+    },  
+
     saveEdited:{
         backgroundColor:"#6ECAFF",
         marginBottom: theme.spacing(1),
     },
+
     cancelEdited:{
         backgroundColor:"#6ECAFF",
     },
@@ -49,15 +51,6 @@ const useStyle = makeStyles(theme => ({
     },
 
 }))
-
-interface TaskDto{
-    id?: number;
-    userId?: number;
-    description: string;
-    date?: string;
-    time: string;
-    status?: string;
-}
 
 interface ITaskForm{
     selectedDate: string;
@@ -95,9 +88,7 @@ function TaskForm({selectedDate, mutate, updateId, setUpdateId}: ITaskForm): JSX
 
                 if((timeFrom.isBefore(storedTimeTo) && storedTimeFrom.isBefore(timeFrom)) 
                     || (timeTo.isBefore(storedTimeTo) && storedTimeFrom.isBefore(timeTo)) ){
-                    
                     isCorrect = false;
-                    return;
                 }
             })
             return isCorrect;
@@ -122,20 +113,21 @@ function TaskForm({selectedDate, mutate, updateId, setUpdateId}: ITaskForm): JSX
                 mutate();
                 mutateDate();
             });
-        }else{
+        } else {
             alert("Time is incorrect");
         }
     }
 
     const updateTask = (id: number, input: string): void => {
-        if (id >= 0){
+        if (id > 0){
             fetch(`http://localhost:3001/api/scheduler/${id}`, {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/json; charset=utf-8'},
                 body: JSON.stringify({description: input}), 
             }).then(() => {
                 mutate();
-        });} 
+            });
+        } 
     }
 
     return(
@@ -186,7 +178,7 @@ function TaskForm({selectedDate, mutate, updateId, setUpdateId}: ITaskForm): JSX
                     setUserInput("");
                 }}
             >
-                Зберегти
+            Зберегти
             </Button>
             <Button
                 className={classes.cancelEdited}
@@ -195,7 +187,7 @@ function TaskForm({selectedDate, mutate, updateId, setUpdateId}: ITaskForm): JSX
                     setUserInput("");
                 }}
             >
-                Скасувати
+            Скасувати
             </Button>
         </Box>
         }

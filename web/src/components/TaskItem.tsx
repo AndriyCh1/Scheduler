@@ -25,7 +25,7 @@ interface ITaskItem{
     setUpdateId: (id: number) => void;
 }
 
-function TaskItem({task, mutate, setUpdateId}: ITaskItem): JSX.Element { // ?????????
+function TaskItem({task, mutate, setUpdateId}: ITaskItem): JSX.Element {
     const classes = useStyle();
 
     const deleteTask = (id: number): void => {
@@ -42,7 +42,7 @@ function TaskItem({task, mutate, setUpdateId}: ITaskItem): JSX.Element { // ????
     const completeTask = (id: number): void => {
         let status: string = "completed";
 
-        if (task.status === "completed") status = "inProgress";
+        if (task.status === "completed") status = "inprogress";
 
         if (id > 0){
             fetch(`http://localhost:3001/api/scheduler/${id}`, {
@@ -63,7 +63,8 @@ function TaskItem({task, mutate, setUpdateId}: ITaskItem): JSX.Element { // ????
                         cursor: "pointer", 
                         marginRight:"20px",
                         color: green[500], 
-                        fontSize: 30}}
+                        fontSize: 30
+                    }}
                     onClick={() => {completeTask(task.id)}}
                 />
                 <EditIcon 
@@ -71,7 +72,8 @@ function TaskItem({task, mutate, setUpdateId}: ITaskItem): JSX.Element { // ????
                         cursor: "pointer", 
                         marginRight:"20px",
                         color: orange[500], 
-                        fontSize: 30}}
+                        fontSize: 30
+                    }}
                     onClick={() => setUpdateId(task.id)}
                 />
                 <DeleteIcon 

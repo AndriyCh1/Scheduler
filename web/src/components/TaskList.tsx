@@ -5,7 +5,7 @@ import { TaskDto } from "../dto/task.dto";
 
 interface ITaskList{
     selectedDate: string;
-    mutate: any ; // ????????????????????????
+    mutate: any ; // ????????????
     setUpdateId: (id: number | null) => void;
 }
 
@@ -15,14 +15,14 @@ function TaskList({selectedDate, mutate, setUpdateId}: ITaskList): JSX.Element {
     const {data: tasks, error} = useSWR<TaskDto[]>("http://localhost:3001/api/scheduler/", fetcher);
     console.log(typeof(tasks));
     
-    const getDataByDate = (date: string): TaskDto[] | undefined => {
+    const getTasksByDate = (date: string): TaskDto[] | undefined => {
         let arr: TaskDto[] | undefined = tasks?.filter( function(task) { return task.date === date });
         return arr;
     }
     
     return(
         <Box>
-            {getDataByDate(selectedDate)?.map((task, index) => 
+            {getTasksByDate(selectedDate)?.map((task, index) => 
                 <TaskItem
                     key={index}
                     task={task}

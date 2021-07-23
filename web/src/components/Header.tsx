@@ -27,16 +27,15 @@ const useStyle = makeStyles((theme) =>({
     dateColor:{
         color: '#000',
         fontSize: '17px',
-
     }
 }));
 
-interface IsetDate{  
+interface IHeader{  
     setDate: (date: string) => void;
-    selectedDate: string
+    selectedDate: string;
 }
 
-function Header({setDate, selectedDate}: IsetDate): JSX.Element{
+function Header({setDate, selectedDate}: IHeader): JSX.Element{
     const classes = useStyle();
 
     const incrementDate = (selectedDate: string): void => {
@@ -63,10 +62,12 @@ function Header({setDate, selectedDate}: IsetDate): JSX.Element{
                 InputLabelProps={{
                     shrink: true,
                 }}
+
                 InputProps={{ 
                     disableUnderline: true,
                     className: classes.dateColor,
                 }}
+
                 onChange={e => setDate(e.target.value)}
             />
             <ArrowBackIcon 

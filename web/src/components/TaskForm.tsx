@@ -86,9 +86,11 @@ function TaskForm({selectedDate, mutate, updateId, setUpdateId}: ITaskForm): JSX
                 const storedTimeFrom: moment.Moment = moment(task.time?.split("-")[0], "HH:mm");
                 const storedTimeTo: moment.Moment = moment(task.time?.split("-")[1], "HH:mm");
 
-                if((timeFrom.isBefore(storedTimeTo) && storedTimeFrom.isBefore(timeFrom)) 
-                    || (timeTo.isBefore(storedTimeTo) && storedTimeFrom.isBefore(timeTo)) ){
-                    isCorrect = false;
+                if( !(timeFrom.isBefore(storedTimeFrom) && timeTo.isBefore(storedTimeFrom)) 
+                    && !(storedTimeTo.isBefore(timeFrom) && storedTimeTo.isBefore(timeTo))){
+                        
+                    isCorrect = false;  
+                    return
                 }
             })
             return isCorrect;
@@ -114,7 +116,7 @@ function TaskForm({selectedDate, mutate, updateId, setUpdateId}: ITaskForm): JSX
                 mutateDate();
             });
         } else {
-            alert("Time is incorrect");
+            alert("Неправильний проміжок часу. Перевірте його коректність чи впевніться, що він не зайнятий.");
         }
     }
 
@@ -163,7 +165,7 @@ function TaskForm({selectedDate, mutate, updateId, setUpdateId}: ITaskForm): JSX
                     description: userInput, 
                     date: selectedDate,
                     time: selectedTimeFrom +"-"+ selectedTimeTo, 
-                    status: "inProcess"
+                    status: "inprocess"
                 } as TaskDto);
                 setUserInput("");
             }}> 

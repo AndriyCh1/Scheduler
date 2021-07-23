@@ -31,7 +31,7 @@ function Scheduler(): JSX.Element {
         <Paper className={classes.scheduler}>
             <Header 
                 setDate={setDate}
-                selectedDate={selectedDate} // ? selected ?
+                selectedDate={selectedDate} 
             />
             <TaskList 
                 selectedDate={selectedDate} 

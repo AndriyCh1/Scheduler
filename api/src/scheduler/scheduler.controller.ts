@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { TaskDto } from 'src/dto/tasks.dto';
 import { SchedulerService } from './scheduler.service';
 
